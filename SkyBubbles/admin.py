@@ -6,16 +6,18 @@ from .models import *
 # admin.site.register(Price)
 
 
-class TransactionAdmin(admin.ModelAdmin):
+class AcceptanceAdmin(admin.ModelAdmin):
     list_display = ('id', 'ingredient', 'user_id', 'storage', 'partner', 'count', 'price', 'active')
     list_filter = ('storage', 'partner', 'active')
 
 
-admin.site.register(Transaction, TransactionAdmin)
+admin.site.register(Acceptance, AcceptanceAdmin)
 admin.site.register(Category)
 admin.site.register(Ingredient)
 admin.site.register(Storage)
 admin.site.register(Partner)
+admin.site.register(Transaction)
+
 
 
 

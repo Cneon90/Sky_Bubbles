@@ -1,12 +1,11 @@
-
-
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 
 class Product(models.Model):
     name = models.CharField(max_length=255, verbose_name='Название')
-    description = models.TextField(verbose_name='Описание')
+    description = models.TextField(verbose_name='Описание', blank=True)
     current_price = models.ForeignKey('Price', on_delete=models.SET_NULL, null=True, related_name='current_price',verbose_name='Текущая цена')
     image = models.ImageField(upload_to='images', verbose_name='Фото')
     weight = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='Вес')
@@ -15,7 +14,6 @@ class Product(models.Model):
     created_date = models.DateTimeField(auto_now=True, verbose_name='Дата создания')
     updated_date = models.DateTimeField(default=timezone.now, verbose_name='Дата обновления')
     deleted = models.BooleanField(default=False, verbose_name='Удален?')
-    # Другие поля
 
     def __str__(self):
         return self.name
@@ -26,12 +24,11 @@ class Price(models.Model):
     value = models.DecimalField(max_digits=10, decimal_places=2)
     start_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField(null=True, blank=True)
+    created_date = models.DateTimeField(auto_now=True, verbose_name='Дата создания')
+    updated_date = models.DateTimeField(default=timezone.now, verbose_name='Дата обновления')
 
     def __str__(self):
         return f'{self.product.name} - {self.value}'
-
-
-
 
 # class Ingridient(models.Model):
 #     name = models.CharField(max_length=100)
@@ -66,6 +63,10 @@ class Price(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
+    description = models.CharField(max_length=255, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Привязка к модели пользователя
+    created_date = models.DateTimeField(auto_now=True, verbose_name='Дата создания')
+    updated_date = models.DateTimeField(default=timezone.now, verbose_name='Дата обновления')
 
     def __str__(self):
         return self.name
@@ -74,6 +75,7 @@ class Category(models.Model):
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
 
+
 class Ingredient(models.Model):
     name = models.CharField(max_length=100)
     color = models.CharField(max_length=50)
@@ -81,6 +83,10 @@ class Ingredient(models.Model):
     size_w = models.FloatField()
     weight = models.FloatField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Привязка к модели пользователя
+    description = models.CharField(max_length=255, blank=True)
+    created_date = models.DateTimeField(auto_now=True, verbose_name='Дата создания')
+    updated_date = models.DateTimeField(default=timezone.now, verbose_name='Дата обновления')
 
     def __str__(self):
         return self.name
@@ -89,8 +95,13 @@ class Ingredient(models.Model):
         verbose_name = 'Ингридиент'
         verbose_name_plural = 'Ингридиенты'
 
+
 class Storage(models.Model):
     name = models.CharField(max_length=100)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Привязка к модели пользователя
+    description = models.CharField(max_length=255, blank=True)
+    created_date = models.DateTimeField(auto_now=True, verbose_name='Дата создания')
+    updated_date = models.DateTimeField(default=timezone.now, verbose_name='Дата обновления')
 
     def __str__(self):
         return self.name
@@ -99,8 +110,13 @@ class Storage(models.Model):
         verbose_name = 'Склад'
         verbose_name_plural = 'Склады'
 
+
 class Partner(models.Model):
     name = models.CharField(max_length=100)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Привязка к модели пользователя
+    description = models.CharField(max_length=255, blank=True)
+    created_date = models.DateTimeField(auto_now=True, verbose_name='Дата создания')
+    updated_date = models.DateTimeField(default=timezone.now, verbose_name='Дата обновления')
 
     def __str__(self):
         return self.name
@@ -109,18 +125,38 @@ class Partner(models.Model):
         verbose_name = 'Поставщик'
         verbose_name_plural = 'Поставщики'
 
+
 class Transaction(models.Model):
+    price_delivery = models.IntegerField(verbose_name='Стоимость доставки')
+    created_date = models.DateTimeField(auto_now=True, verbose_name='Дата создания')
+    updated_date = models.DateTimeField(default=timezone.now, verbose_name='Дата обновления')
+
+    def __str__(self):
+        return f'Поставка {self.created_date.strftime("%d.%m.%Y")}'
+
+    class Meta:
+        verbose_name = 'Поставка'
+        verbose_name_plural = 'Поставки'
+
+
+class Acceptance(models.Model):
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
-    user_id = models.IntegerField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Привязка к модели пользователя
     storage = models.ForeignKey(Storage, on_delete=models.CASCADE)
     partner = models.ForeignKey(Partner, on_delete=models.CASCADE)
     count = models.IntegerField()
-    price = models.FloatField()
+    price = models.IntegerField()
     active = models.BooleanField()
+    created_date = models.DateTimeField(auto_now=True, verbose_name='Дата создания')
+    updated_date = models.DateTimeField(default=timezone.now, verbose_name='Дата обновления')
+    Transaction = models.ForeignKey(Transaction, on_delete=models.CASCADE, verbose_name='Поставка')
+
 
     def __str__(self):
-        return f"{self.ingredient.name} - {self.user_id}"
+        return f"{self.ingredient.name} - {self.user}"
 
     class Meta:
         verbose_name = 'Приход'
         verbose_name_plural = 'Приходы'
+
+
