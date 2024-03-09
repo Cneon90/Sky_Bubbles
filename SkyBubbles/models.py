@@ -70,6 +70,10 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
+
 class Ingredient(models.Model):
     name = models.CharField(max_length=100)
     color = models.CharField(max_length=50)
@@ -81,17 +85,29 @@ class Ingredient(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = 'Ингридиент'
+        verbose_name_plural = 'Ингридиенты'
+
 class Storage(models.Model):
     name = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = 'Склад'
+        verbose_name_plural = 'Склады'
+
 class Partner(models.Model):
     name = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name = 'Поставщик'
+        verbose_name_plural = 'Поставщики'
 
 class Transaction(models.Model):
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
@@ -104,3 +120,7 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f"{self.ingredient.name} - {self.user_id}"
+
+    class Meta:
+        verbose_name = 'Приход'
+        verbose_name_plural = 'Приходы'
